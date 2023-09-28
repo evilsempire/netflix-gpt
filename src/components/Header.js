@@ -4,12 +4,17 @@ import { useDispatch, useSelector } from 'react-redux'
 import { auth } from '../utils/firebase';
 import { addUser, removeUser } from '../utils/userSlice';
 import { useNavigate } from 'react-router-dom';
-import { NETFLIX_LOGO } from '../utils/constants';
+import { LANGUAGES, NETFLIX_LOGO } from '../utils/constants';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { toggleSearchPageView } from '../utils/gptSearchSlice';
+import { setLanguage } from '../utils/configSlice';
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(state => state.user);
+  const showSearchPageView = useSelector(state => state.search.showSearchPageView);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -31,6 +36,14 @@ const Header = () => {
     });
   }
 
+  const toggleSearchPage = () => {
+    dispatch(toggleSearchPageView())
+  }
+
+  const changeLanguageConfig = (e) => {
+    dispatch(setLanguage(e.target.value))
+  }
+
   return (
     <div className='flex absolute w-full bg-gradient-to-b from-black z-10 justify-between'>
         <img 
@@ -40,7 +53,11 @@ const Header = () => {
         />
 
         {user && <div className='flex p-2'>
-          <img className='w-12 h-12 mt-2 ' src={user.photoURL} alt='avatar'/>
+          <select className='h-6 mt-5 py' onChange={e => changeLanguageConfig(e)}>
+          {LANGUAGES.map(({key, value}) => <option key={key} value={key}>{value}</option>)}
+          </select>
+          <button onClick={toggleSearchPage} className='text-white px-2 font-bold'><FontAwesomeIcon icon={showSearchPageView? faHome :faSearch} className='mr-2 text-2xl'/></button>
+          <img className='w-12 h-12 mt-2 rounded-full' src={user.photoURL} alt='avatar'/>
           <button className='text-white font-bold p-2' onClick={signOutUser}>Sign out</button>
         </div>}
     </div>

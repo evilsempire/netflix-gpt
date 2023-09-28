@@ -16,3 +16,18 @@ export const MOVIE_API_OPTIONS = {
 };
 
 export const TMDB_API = "https://api.themoviedb.org/3/movie/";
+
+export const LANGUAGES = [
+  {
+    key: 'english', value: "English"
+  },
+  {
+    key: 'hindi', value: "Hindi"
+  },
+  {
+    key: 'marathi', value: "Marathi"
+  },
+  {
+    key: 'japanese', value: "Japanese"
+  }
+]

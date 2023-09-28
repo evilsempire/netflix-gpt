@@ -1,12 +1,17 @@
-import React from 'react'
-import Header from './Header'
-import useNowPlayingMovies from '../hooks/useNowPlayingMovies'
+import React from "react";
+import Header from "./Header";
+import useNowPlayingMovies from "../hooks/useNowPlayingMovies";
 import MainContainer from "./MainContainer";
 import SecondaryContainer from "./SecondaryContainer";
-import usePopulerMovies from '../hooks/usePopulerMovies';
-import useTopRatedMovies from '../hooks/useTopRatedMovies';
-import useUpcomingMovies from '../hooks/useUpcomingMovies';
+import usePopulerMovies from "../hooks/usePopulerMovies";
+import useTopRatedMovies from "../hooks/useTopRatedMovies";
+import useUpcomingMovies from "../hooks/useUpcomingMovies";
+import GPTSearchPage from "./GPTSearchPage";
+import { useSelector } from "react-redux";
 const Browse = () => {
+  const showSearchPageView = useSelector(
+    (state) => state.search.showSearchPageView
+  );
 
   useNowPlayingMovies();
   usePopulerMovies();
@@ -16,7 +21,14 @@ const Browse = () => {
   return (
     <div>
       <Header />
-
+      {showSearchPageView ? (
+        <GPTSearchPage />
+      ) : (
+        <>
+          <MainContainer />
+          <SecondaryContainer />
+        </>
+      )}
       {/* 
            - MainContainer
               -video background
@@ -25,10 +37,8 @@ const Browse = () => {
               -movie list * n
               -cards * n
       */}
-      <MainContainer/>
-      <SecondaryContainer />
     </div>
-  )
-}
+  );
+};
 
-export default Browse
+export default Browse;
