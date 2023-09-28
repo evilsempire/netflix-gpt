@@ -14,3 +14,5 @@ export const MOVIE_API_OPTIONS = {
       "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5NmE4MjY1YzJhMTA4ODM5YjE1MDMyMzg2YTNiY2VkMSIsInN1YiI6IjVjNTQ2NWRiMGUwYTI2MTJjY2QzZmE4ZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.r-1SV7ZyNMmdqjWyWs3AYHInyqaTIlCHm1qHQ5qq2-c",
   },
 };
+
+export const TMDB_API = "https://api.themoviedb.org/3/movie/";

@@ -3,16 +3,15 @@ import { useSelector } from "react-redux";
 import useTrailerVideo from "../hooks/useTrailerVideo";
 
 const VideoBackground = ({ movieId }) => {
-  const trailerVideo = useSelector(state => state?.movies?.trailerVideo);
 
   useTrailerVideo(movieId);
+  const trailerVideo = useSelector(state => state?.movies?.trailerVideo);
 
   return (
-    <div>
+    <div className="">
       <iframe
-        width="560"
-        height="315"
-        src={`https://www.youtube.com/embed/${trailerVideo?.key}?si=gu39bNLcy6RHCZbm&amp;controls=0`}
+        className=" w-screen aspect-video"
+        src={`https://www.youtube.com/embed/${trailerVideo?.key}?autoplay=1&si=gu39bNLcy6RHCZbm&amp&hd=1&mute=1;controls=0`}
         title="YouTube video player"
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
