@@ -1,23 +1,97 @@
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import languageConfig from "../utils/languageConfig";
+import openai from "../utils/openai";
+import { MOVIE_API_OPTIONS } from "../utils/constants";
+import { setMovieResult } from "../utils/gptSearchSlice";
 
 const GPTSearchBar = () => {
+  const dispatch = useDispatch();
+  const language = useSelector((store) => store.config.language);
+  const searchText = useRef(null);
+  const [loading, setLoading] = useState(false);
 
-  const  language= useSelector(store => store.config.language)
+  const getMoviesBasedOnNames = async (movie) => {
+    const movieResponse = await fetch(
+      "https://api.themoviedb.org/3/search/movie?query=" +
+        movie +
+        "&include_adult=false&language=en-US&page=1",
+      MOVIE_API_OPTIONS
+    );
+
+    const movieDetails = await movieResponse.json();
+
+    return movieDetails;
+  };
+
+  const searchGPTMovies = async () => {
+	setLoading(true)
+    const gptQuery =
+      "Act as a Movie Recommendation system and suggest some movies for the query : " +
+      searchText.current.value +
+      ". only give me names of 5 movies, comma seperated like the example result given ahead. Example result:Golmaal, 3 idiots";
+    const data = await openai.chat.completions.create({
+      messages: [{ role: "user", content: gptQuery }],
+      model: "gpt-3.5-turbo",
+    });
+
+    const movieNames = data.choices?.[0]?.message?.content?.split(",");
+
+    //get the movieDetails
+    const results = movieNames.map((movie) => getMoviesBasedOnNames(movie));
+
+    const movieDetails = await Promise.all(results);
+
+    dispatch(setMovieResult({ movieNames, movieDetails }));
+	setLoading(false)
+  };
 
   return (
     <div className="pt-[15%] flex justify-center">
-      <form className=" grid grid-cols-12 w-1/2 p-2 shadow-md">
+      <form
+        className=" grid grid-cols-12 w-1/2 p-2 shadow-md"
+        onSubmit={(e) => e.preventDefault()}
+      >
         <input
+          ref={searchText}
           className="col-span-8 focus:outline-none focus:ring focus:ring-slate-50  p-2"
           type="text"
           placeholder={languageConfig[language].search}
         />
-        <button className="col-span-4 bg-red-700 mx-2  p-2">
-          <p className="text-white"><FontAwesomeIcon icon={faSearch} className="" /> {languageConfig[language].searchButton}</p>
+        <button
+          className="col-span-4 bg-red-700 mx-2  p-2"
+          onClick={searchGPTMovies}
+        >
+          <p className="text-white">
+            {loading ? (
+				<div role="status">
+				<svg
+				  aria-hidden="true"
+				  class="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600 dark:fill-gray-300"
+				  viewBox="0 0 100 101"
+				  fill="none"
+				  xmlns="http://www.w3.org/2000/svg"
+				>
+				  <path
+					d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+					fill="currentColor"
+				  />
+				  <path
+					d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+					fill="currentFill"
+				  />
+				</svg>
+				<span class="sr-only">Loading...</span>
+			  </div>
+            ) : (	
+              <>
+                <FontAwesomeIcon icon={faSearch} className="" />{" "}
+                {languageConfig[language].searchButton}
+              </>
+            )}
+          </p>
         </button>
       </form>
     </div>

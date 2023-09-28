@@ -7,12 +7,12 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAYmusrH1CMHVit7u4Ja1KGbkl8VyhSxbo",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "netflix-gpt-2dbcd.firebaseapp.com",
   projectId: "netflix-gpt-2dbcd",
   storageBucket: "netflix-gpt-2dbcd.appspot.com",
-  messagingSenderId: "767444921872",
-  appId: "1:767444921872:web:8df36eb696d1809b0ca495"
+  messagingSenderId: process.env.REACT_APP_FIREBASE_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
